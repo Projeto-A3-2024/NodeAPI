@@ -2,11 +2,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +27,8 @@ export default function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage(`Sucesso: ${data.message}`);
+        localStorage.setItem('token', data.token);
+        router.push("/home");
       } else {
         const errorData = await response.json();
         setMessage(`Erro: ${errorData.message}`);
