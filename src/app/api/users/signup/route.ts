@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
 export async function POST(request: Request) {
-  const { username, password } = await request.json();
+  const { username, password, email } = await request.json();
 
-  if (!username || !password) {
+  if (!username || !password || !email) {
     return NextResponse.json(
-      { message: 'Username e password são obrigatórios' },
+      { message: 'Todos os campos são obrigatórios' },
       { status: 400 }
     );
   }
@@ -19,6 +19,7 @@ export async function POST(request: Request) {
       data: {
         username,
         password: hashedPassword,
+        email,
       },
     });
 
