@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import jwt from "jsonwebtoken";
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET;
 if (!SECRET_KEY) {
