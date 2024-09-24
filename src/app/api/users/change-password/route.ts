@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         );
     } catch (error : any) {
         return NextResponse.json(
-            { message: 'Erro ao criar usuário', error: error.message },
+            { message: 'Erro ao alterar senha', error: error.message },
             { status: 500 }
         );
     }
