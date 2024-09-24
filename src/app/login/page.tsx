@@ -56,7 +56,7 @@ export default function Login() {
         <h1 className="text-xl font-semibold text-center text-black">Login</h1>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Nome do usuário"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="border p-2 rounded text-black"
@@ -65,7 +65,7 @@ export default function Login() {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="border p-2 rounded text-black"
@@ -75,16 +75,18 @@ export default function Login() {
           type="submit"
           className="bg-blue-500 text-white rounded py-2 hover:bg-blue-600 transition"
         >
-          Login
+          Entrar
         </button>
+        <div className="mt-4 flex flex-col space-y-2 text-left">
+          <Link href="/users/forgot-password" className="text-blue-500 hover:underline">
+            Esqueceu sua senha?
+          </Link>
+          <Link href="/users/signup" className="text-blue-500 hover:underline">
+            Cadastrar um novo usuário
+          </Link>
+        </div>        
       </form>
       {message && <p className="mt-4 text-red-500">{message}</p>}
-
-      <div className="mt-4">
-        <Link href="/users/signup" className="text-blue-500 hover:underline">
-          Cadastrar um novo usuário
-        </Link>
-      </div>
     </div>
   );
 }
