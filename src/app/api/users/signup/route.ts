@@ -12,7 +12,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Hash da senha antes de salvar
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
