@@ -51,7 +51,7 @@ export default function Login() {
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm"
+        className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm border-radius rounded-lg"
       >
         <h1 className="text-xl font-semibold text-center text-black">Login</h1>
         <input
@@ -79,10 +79,10 @@ export default function Login() {
         </button>
         <div className="mt-4 flex flex-col space-y-2 text-left">
           <Link href="/users/forgot-password" className="text-blue-500 hover:underline">
-            Esqueceu sua senha?
+            Esqueci minha senha
           </Link>
           <Link href="/users/signup" className="text-blue-500 hover:underline">
-            Cadastrar um novo usuário
+            Criar nova conta
           </Link>
         </div>        
       </form>

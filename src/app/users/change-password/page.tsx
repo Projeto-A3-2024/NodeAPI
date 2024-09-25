@@ -2,9 +2,11 @@
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { validatePassword } from '@/utils/auth';
 
 export default function ChangePassword() {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [recoveryCode, setRecoveryCode] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -23,6 +25,16 @@ export default function ChangePassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setMessage('As senhas não coincidem.');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setMessage('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula e um caractere especial.');
+      return;
+    }
 
     try {
     const response = await fetch('/api/users/change-password', {
@@ -51,9 +63,9 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6 text-black">Recuperação de senha</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">      
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm rounded-lg">
+      <h1 className="text-2xl font-bold mb-6 text-black">Digite sua nova senha</h1>
         <input
           type="text"
           placeholder="Código de recuperação"
@@ -67,6 +79,14 @@ export default function ChangePassword() {
           placeholder="Nova Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="border p-2 rounded text-black"
+          required
+          />
+        <input
+          type="password"
+          placeholder="Confirme a nova Senha"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           className="border p-2 rounded text-black"
           required
           />
