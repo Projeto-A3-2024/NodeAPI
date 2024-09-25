@@ -37,9 +37,9 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-6 text-black">Recuperação de senha</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">      
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm rounded-lg">
+      <h1 className="text-2xl font-bold mb-6 text-black">Digite seu e-mail</h1>
         <input
           type="text"
           placeholder="Email"
