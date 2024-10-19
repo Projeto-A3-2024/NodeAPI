@@ -2,25 +2,26 @@
 import { useState } from 'react';
 import { useRouter } from "next/navigation";
 import { validatePassword } from '@/utils/auth';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setMessage('As senhas não coincidem.');
+      toast.error('As senhas não coincidem.');
       return;
     }
 
     if (!validatePassword(password)) {
-      setMessage('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula e um caractere especial.');
+      toast.error('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula e um caractere especial.');
       return;
     }
 
@@ -38,16 +39,14 @@ export default function Signup() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setMessage(`Usuário criado com sucesso: ${data.user.username}`);        
+        localStorage.setItem('signupSuccessMessage', 'Usuário criado com sucesso!');
         router.push("/login");
       } else {
         const errorData = await response.json();
-        setMessage(`Erro: ${errorData.message}`);
+        toast.error(errorData.error);
       }
     } catch (error) {
-      setMessage('Erro ao enviar requisição');
-      console.error('Erro:', error);
+      toast.error('Erro ao enviar requisição: ' + error);      
     }
   };
 
@@ -91,7 +90,6 @@ export default function Signup() {
           Criar Usuário
         </button>
       </form>
-      {message && <p className="mt-4 text-red-500">{message}</p>}
     </div>
   );
 }

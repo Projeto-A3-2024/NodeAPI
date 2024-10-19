@@ -2,10 +2,7 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET;
-if (!SECRET_KEY) {
-  throw new Error('JWT_SECRET não está definido. Defina uma chave secreta em suas variáveis de ambiente.');
-}
+const SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET!;
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -22,7 +19,7 @@ export async function POST(req: Request) {
   });
 
   if (!user) {
-    return new Response(JSON.stringify({ message: 'Usuário não encontrado' }), {
+    return new Response(JSON.stringify({ message: 'Usuário ou senha podem estar incorretos' }), {
       status: 401,
     });
   }
@@ -30,12 +27,12 @@ export async function POST(req: Request) {
   const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
-    return new Response(JSON.stringify({ message: 'Senha incorreta' }), {
+    return new Response(JSON.stringify({ message: 'Usuário ou senha podem estar incorretos' }), {
       status: 401,
     });
   }
 
-  const token = jwt.sign({ userId: user.id, username: user.username }, SECRET_KEY!, {
+  const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, SECRET_KEY, {
     expiresIn: '3h',
   });
 
