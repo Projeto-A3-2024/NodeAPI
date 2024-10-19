@@ -1,14 +1,14 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET!;
 
 export const authorize = (roles: ('ADMIN' | 'PROFESSIONAL' | 'PATIENT')[]) => {
-  return (req: NextApiRequest, res: NextApiResponse, next: () => void) => {
-    const authHeader = req.headers.authorization;
-    
+  return async (request: Request) => {
+    const authHeader = request.headers.get('Authorization');
+
     if (!authHeader) {
-      return res.status(401).json({ message: 'Token não fornecido' });
+      return NextResponse.json({ message: 'Token não fornecido' }, { status: 401 });
     }
 
     const token = authHeader.split(' ')[1];
@@ -17,13 +17,13 @@ export const authorize = (roles: ('ADMIN' | 'PROFESSIONAL' | 'PATIENT')[]) => {
       const decodedToken: any = jwt.verify(token, SECRET_KEY);
 
       if (!roles.includes(decodedToken.role)) {
-        return res.status(403).json({ message: 'Acesso negado' });
+        return NextResponse.json({ message: 'Acesso negado' }, { status: 403 });
       }
 
-      (req as any).user = decodedToken;
-      next();
+      (request as any).user = decodedToken;
+      return null;
     } catch (error) {
-      return res.status(401).json({ message: 'Token inválido ou expirado' });
+      return NextResponse.json({ message: 'Token inválido ou expirado' }, { status: 401 });
     }
   };
 };

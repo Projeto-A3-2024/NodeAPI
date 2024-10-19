@@ -11,6 +11,10 @@ export default function AdminHome() {
     router.push("/login");
   };
 
+  const handleCreateProfessional = () => {
+    router.push("/home/admin/professional");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-lg text-center">
@@ -22,6 +26,13 @@ export default function AdminHome() {
           className="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600 transition"
         >
           Logout
+        </button>
+
+        <button
+          onClick={handleCreateProfessional}
+          className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition mb-4"
+        >
+          Criar Profissional
         </button>
       </div>
     </div>
