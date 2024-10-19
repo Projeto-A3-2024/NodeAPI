@@ -1,14 +1,17 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       const response = await fetch('/api/users/forgot-password', {
@@ -22,17 +25,20 @@ export default function ForgotPassword() {
       });
 
       if (response.ok) {
-        setMessage(`E-mail de recuperação enviado`);
+        toast.success('E-mail de recuperação enviado');
         setEmail('');
-        router.push(`/users/change-password?email=${encodeURIComponent(email)}`);
+        setTimeout(() => {
+          router.push(`/users/change-password?email=${encodeURIComponent(email)}`);
+        }, 3000);
       } else {
         const errorData = await response.json();
-        setMessage(`Erro: ${errorData.message}`);
+        toast.error(`Erro: ${errorData.message}`);
       }
       
     } catch (error) {
-      setMessage('Erro ao enviar requisição');
-      console.error('Erro:', error);
+      toast.error(`Erro: ${error}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -48,11 +54,13 @@ export default function ForgotPassword() {
           className="border p-2 rounded text-black"
           required
         />
-        <button type="submit" className="bg-blue-500 text-white rounded py-2 hover:bg-blue-600 transition">
-          Enviar
+        <button 
+          type="submit" 
+          className="bg-blue-500 text-white rounded py-2 hover:bg-blue-600 transition"
+          disabled={isSubmitting}>
+          {isSubmitting ? 'Enviando...' : 'Enviar'}
         </button>
       </form>
-      {message && <p className="mt-4 text-red-500">{message}</p>}
     </div>
   );
 }

@@ -3,13 +3,14 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { validatePassword } from '@/utils/auth';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ChangePassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [recoveryCode, setRecoveryCode] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -18,7 +19,7 @@ export default function ChangePassword() {
     if (emailFromQuery) {
         setEmail(emailFromQuery);
     } else {
-        setMessage('E-mail não fornecido.');
+      toast.error('E-mail não fornecido.');
     }
   }, [searchParams]);
 
@@ -27,12 +28,12 @@ export default function ChangePassword() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setMessage('As senhas não coincidem.');
+      toast.error('As senhas não coincidem.');
       return;
     }
 
     if (!validatePassword(password)) {
-      setMessage('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula e um caractere especial.');
+      toast.error('A senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula e um caractere especial.');
       return;
     }
 
@@ -49,16 +50,16 @@ export default function ChangePassword() {
       }),
     });
 
-    if (response.ok) {          
+    if (response.ok) {         
+      localStorage.setItem('changePasswordSuccessMessage', 'Senha alterada com sucesso!'); 
       router.push("/login");
     } else {
       const errorData = await response.json();
-      setMessage(`Erro: ${errorData.message}`);
+      toast.error(`Erro: ${errorData.message}`);
     }
     
     } catch (error) {
-      setMessage('Erro ao enviar requisição');
-      console.error('Erro:', error);
+      toast.error('Erro ao enviar requisição');
     }
   };
 
@@ -94,7 +95,6 @@ export default function ChangePassword() {
         Enviar
         </button>
       </form>
-      {message && <p className="mt-4 text-red-500">{message}</p>}
     </div>
   );
 }

@@ -1,14 +1,30 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { decodeJwt } from "@/utils/auth";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const signupSuccessMessage = localStorage.getItem('signupSuccessMessage');
+    if (signupSuccessMessage) {
+      toast.success(signupSuccessMessage);
+      localStorage.removeItem('signupSuccessMessage');
+    }
+
+    const changePasswordSuccessMessage = localStorage.getItem('changePasswordSuccessMessage');
+    if (changePasswordSuccessMessage) {
+      toast.success(changePasswordSuccessMessage);
+      localStorage.removeItem('changePasswordSuccessMessage');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,14 +44,29 @@ export default function Login() {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token);
-        router.push("/home");
+        const decodedToken = decodeJwt(data.token);
+
+        switch (decodedToken.role) {
+          case 'ADMIN':
+            router.push('/home/admin');
+            break;
+          case 'PROFESSIONAL':
+            router.push('/home/professional');
+            break;
+          case 'PATIENT':
+            router.push('/home/patient');
+            break;
+          default:
+            router.push('/login');
+            break;
+        }
+
       } else {
         const errorData = await response.json();
-        setMessage(`Erro: ${errorData.message}`);
+        toast.error(errorData.message);
       }
     } catch (error) {
-      setMessage('Erro ao enviar requisição');
-      console.error('Erro:', error);
+      toast.error('Erro ao enviar requisição');
     }
   };
 
@@ -86,7 +117,6 @@ export default function Login() {
           </Link>
         </div>        
       </form>
-      {message && <p className="mt-4 text-red-500">{message}</p>}
     </div>
   );
 }

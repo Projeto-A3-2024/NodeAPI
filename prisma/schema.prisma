@@ -7,6 +7,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum Role {
+  ADMIN
+  PROFESSIONAL
+  PATIENT
+}
+
 model User {
   id                         Int           @id @default(autoincrement())
   username                   String        @unique
@@ -16,4 +22,5 @@ model User {
   recoveryCode               String?
   recoveryCodeExpiresAt      DateTime?
   updatedAt                  DateTime      @updatedAt
+  role                       Role          @default(PATIENT)
 }
