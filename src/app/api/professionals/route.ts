@@ -43,3 +43,19 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET(request: Request) {
+  const authResponse = await authorize(['ADMIN', 'PATIENT', 'PROFESSIONAL'])(request);
+  if (authResponse) return authResponse;
+
+  try {
+    const professionals = await prisma.professional.findMany();
+
+    return NextResponse.json({ professionals }, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: 'Erro ao buscar profissionais', error: error.message },
+      { status: 500 }
+    );
+  }
+}

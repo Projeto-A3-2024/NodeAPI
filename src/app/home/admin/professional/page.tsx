@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,6 +10,7 @@ export default function CreateProfessionalPage() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');
+  useAuth('ADMIN');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
