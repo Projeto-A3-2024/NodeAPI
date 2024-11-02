@@ -13,14 +13,44 @@ enum Role {
   PATIENT
 }
 
+enum Status {
+  DISPONIVEL
+  INDISPONIVEL
+}
+
 model User {
-  id                         Int           @id @default(autoincrement())
-  username                   String        @unique
-  password                   String
-  createdAt                  DateTime      @default(now())
-  email                      String        @unique
-  recoveryCode               String?
-  recoveryCodeExpiresAt      DateTime?
-  updatedAt                  DateTime      @updatedAt
-  role                       Role          @default(PATIENT)
+  id                    Int           @id @default(autoincrement())
+  username              String        @unique
+  password              String
+  createdAt             DateTime      @default(now())
+  email                 String        @unique
+  recoveryCode          String?
+  recoveryCodeExpiresAt DateTime?
+  updatedAt             DateTime      @updatedAt
+  role                  Role          @default(PATIENT)
+  appointments          Appointment[]
+  Professional          Professional?
+}
+
+model Professional {
+  id           Int           @id @default(autoincrement())
+  userId       Int           @unique
+  name         String
+  specialty    String
+  appointments Appointment[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Appointment {
+  id              Int      @id @default(autoincrement())
+  professionalId  Int
+  userId          Int
+  appointmentTime DateTime
+  status          Status
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  professional Professional @relation(fields: [professionalId], references: [id])
+  user         User?        @relation(fields: [userId], references: [id])
 }

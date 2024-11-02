@@ -1,9 +1,8 @@
 import { decodeJwt } from "@/utils/auth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-export const useAuth = (requiredRole: string) => {
-  const [username, setUsername] = useState<string | null>(null);
+export const useAuth = (requiredRole: string) => {  
   const router = useRouter();
 
   useEffect(() => {
@@ -34,7 +33,6 @@ export const useAuth = (requiredRole: string) => {
           return;
         }
 
-        setUsername(decodedToken.username);
       } catch (error) {
         console.error("Erro ao verificar o token:", error);
         clearTokenAndRedirect();
@@ -43,6 +41,4 @@ export const useAuth = (requiredRole: string) => {
 
     checkAuth();
   }, [requiredRole, router]);
-
-  return { username };
 };

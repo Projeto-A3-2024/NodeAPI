@@ -4,17 +4,21 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function PatientHome() {
   const router = useRouter();  
-  const { username } = useAuth('PATIENT');  
+  useAuth('PATIENT');  
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/login");
   };
 
+  const handleCreateAppointment = () => {
+    router.push("/home/patient/appointment");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-lg text-center">
-        <h1 className="text-3xl font-bold mb-4">Bem-vindo, {username || "Usuário"}!</h1>
+        <h1 className="text-3xl font-bold mb-4">Bem-vindo!</h1>
         <p className="text-gray-700 mb-8">Esta é a página inicial do seu aplicativo Next.js.</p>
 
         <button
@@ -22,6 +26,13 @@ export default function PatientHome() {
           className="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600 transition"
         >
           Logout
+        </button>
+
+        <button
+          onClick={handleCreateAppointment}
+          className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition mb-4"
+        >
+          Agendar horário
         </button>
       </div>
     </div>
