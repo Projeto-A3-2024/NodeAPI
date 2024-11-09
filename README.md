@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Projeto de Agendamento de Consultas
 
-## Getting Started
+Este é um sistema de agendamento de consultas para profissionais de saúde e pacientes. O projeto permite que os profissionais definam horários disponíveis e os pacientes agendem consultas.
 
-First, run the development server:
+## Funcionalidades
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Autenticação e Autorização**: O sistema oferece controle de acesso com três tipos de usuários: **Admin**, **Profissional** e **Paciente**.
+- **Gerenciamento de Horários**: Profissionais podem definir horários de disponibilidade.
+- **Agendamento de Consultas**: Pacientes podem agendar consultas nos horários disponíveis.
+- **Visualização de Disponibilidade**: Pacientes podem visualizar os horários disponíveis para agendamento com base no profissional selecionado.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tecnologias Utilizadas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend**:  
+  - React
+  - Next.js
+  - TailwindCSS para estilização
+  - TypeScript
+  - Toast para notificações
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Backend**:  
+  - Node.js
+  - Prisma ORM para interação com o banco de dados
+  - Prisma Client (para banco de dados relacional)
+  - API RESTful com Next.js API routes
+  - Autenticação via tokens JWT
 
-## Learn More
+## Instalação
 
-To learn more about Next.js, take a look at the following resources:
+### Requisitos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Node.js](https://nodejs.org/) >= 16.x.x
+- [Prisma](https://www.prisma.io/) para gerenciamento de banco de dados
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Passos para Inicialização
 
-## Deploy on Vercel
+1. **Clone o repositório**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   git clone https://github.com/usuario/agendamento-consultas.git
+   cd agendamento-consultas
+   
+2. **Instale as dependências**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm install
+
+3. **Crie um arquivo de configuração (.env) e adicione essa configuração para o banco de dados**
+
+   ```bash
+   DATABASE_URL="url_do_seu_banco_de_dados"
+
+4. **Realize a migração do banco de dados**
+
+   ```bash
+   npx prisma migrate dev
+
+5. **Inicie o servidor de desenvolvimento**
+
+   ```bash
+   npm run dev
+
+## Estrutura do Projeto
+
+- **`app/`**: Contém as rotas principais do Next.js. As APIs são configuradas aqui.  
+  Exemplos de arquivos:
+  - `app/api/`: Endpoints de API do Next.js.
+  - `app/login/`: Página inicial do projeto.
+
+- **`prisma/`**: Contém o arquivo de esquema Prisma e as migrações de banco de dados.  
+  Exemplos de arquivos:
+  - `schema.prisma`: Esquema de banco de dados usado pelo Prisma.
+  - `migrations/`: Diretório contendo as migrações de banco de dados.
