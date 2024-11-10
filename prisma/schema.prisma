@@ -45,7 +45,7 @@ model Professional {
 model Appointment {
   id              Int      @id @default(autoincrement())
   professionalId  Int
-  userId          Int
+  userId          Int?
   appointmentTime DateTime
   status          Status
   createdAt       DateTime @default(now())

@@ -15,28 +15,36 @@ export default function CreateProfessionalPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('token');
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('/api/professionals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          email,
+          name,
+          specialty,
+        }),
+      });
 
-    const response = await fetch('/api/professionals', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        username,
-        password,
-        email,
-        name,
-        specialty,
-      }),
-    });
-
-    if (response.ok) {
-      toast.success('Profissional criados com sucesso');
-    } else {
-      const errorData = await response.json();
-      toast.error(`Erro ao criar profissional: ${errorData.error}`)
+      if (response.ok) {
+        toast.success('Profissional criados com sucesso');
+      } else {
+        const errorData = await response.json();
+        toast.error(`Erro ao criar profissional: ${errorData.error}`)
+      }
+    } finally {
+      setUsername('');
+      setPassword('');
+      setEmail('');
+      setName('');
+      setSpecialty('');
     }
   };
 
