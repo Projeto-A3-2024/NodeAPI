@@ -71,3 +71,11 @@ Este é um sistema de agendamento de consultas para profissionais de saúde e pa
   Exemplos de arquivos:
   - `schema.prisma`: Esquema de banco de dados usado pelo Prisma.
   - `migrations/`: Diretório contendo as migrações de banco de dados.
+
+## Documentação da API
+
+Este projeto utiliza **Swagger** para documentar e visualizar as rotas da API, facilitando o entendimento e teste dos endpoints.
+Para acessar a documentação completa da API, basta iniciar o servidor e abrir a seguinte URL em seu navegador:
+
+http://localhost:3000/swagger
+
