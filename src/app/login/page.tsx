@@ -71,20 +71,22 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">
-      <Image
-        className="mb-8"
-        src="https://nextjs.org/icons/next.svg"
-        alt="Next.js logo"
-        width={180}
-        height={38}
-        priority
-      />
+    <main className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-100">
+
+      <header className="mb-8 text-center">
+        <Image
+          src="/icons/logo.svg"
+          alt="Logo"
+          width={180}
+          height={38}
+          className="mx-auto mb-8"
+        />
+      </header>
+
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm border-radius rounded-lg"
+        className="flex flex-col gap-4 bg-white p-8 rounded shadow-md w-full max-w-sm border-radius rounded-lg shadow-lg w-full max-w-lg border"
       >
-        <h1 className="text-xl font-semibold text-center text-black">Login</h1>
         <input
           type="text"
           placeholder="Nome do usuário"
@@ -108,15 +110,15 @@ export default function Login() {
         >
           Entrar
         </button>
-        <div className="mt-4 flex flex-col space-y-2 text-left">
-          <Link href="/users/forgot-password" className="text-blue-500 hover:underline">
-            Esqueci minha senha
-          </Link>
+        <article className="mt-4 flex justify-between text-left">
           <Link href="/users/signup" className="text-blue-500 hover:underline">
             Criar nova conta
           </Link>
-        </div>        
+          <Link href="/users/forgot-password" className="text-blue-500 hover:underline">
+            Esqueci minha senha
+          </Link>
+        </article>
       </form>
-    </div>
+    </main>
   );
 }
