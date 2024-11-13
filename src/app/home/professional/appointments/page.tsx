@@ -8,6 +8,13 @@ interface Appointment {
   id: number
   appointmentTime: Date;
   status: string
+  user: Customer
+}
+
+interface Customer {
+    id: number
+    username: string
+    email: string
 }
 
 export default function Appointments() {
@@ -96,6 +103,7 @@ export default function Appointments() {
               <th className="border px-4 py-2">Data</th>
               <th className="border px-4 py-2">Horários Disponíveis</th>
               <th className="border px-4 py-2">Status</th>
+              <th className="border px-4 py-2">Nome do Paciente</th>
               <th className="border px-4 py-2">Ação</th>
             </tr>
           </thead>
@@ -128,6 +136,10 @@ export default function Appointments() {
                           {appointment.status === 'INDISPONIVEL' ? 'Agendado' : 'Livre'}
                         </span>
                       </div>
+                    </td>
+
+                    <td className="border px-4 py-2">
+                      {appointment.user != null ? appointment.user.username : ''}
                     </td>
 
                     <td className="border px-4 py-2">
