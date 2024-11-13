@@ -7,6 +7,68 @@ const SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL;
 
 sgMail.setApiKey(SENDGRID_API_KEY || '');
 
+/**
+ * @swagger
+ * /api/users/forgot-password:
+ *   post:
+ *     summary: Envia um código de recuperação de senha por e-mail
+ *     description: Envia um e-mail com um código de recuperação para redefinir a senha do usuário.
+ *     requestBody:
+ *       description: Dados necessários para enviar o e-mail de recuperação de senha.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: E-mail do usuário para o qual o código de recuperação será enviado.
+ *                 example: "johndoe@example.com"
+ *             required:
+ *               - email
+ *     responses:
+ *       200:
+ *         description: E-mail de recuperação enviado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "E-mail de recuperação enviado. Verifique sua caixa de entrada."
+ *       400:
+ *         description: E-mail não informado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "E-mail é obrigatório"
+ *       404:
+ *         description: Usuário não encontrado com o e-mail fornecido.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Usuário não encontrado"
+ *       500:
+ *         description: Erro ao enviar o e-mail de recuperação.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Erro ao enviar o e-mail de recuperação"
+ */
 export async function POST(req: Request) {
     const body = await req.json();
     const { email } = body;
