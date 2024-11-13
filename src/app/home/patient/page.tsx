@@ -34,11 +34,11 @@ export default function PatientHome() {
       <section className="p-8 w-full max-w-4xl text-center grid grid-cols-2 gap-4">
 
         <button
-          onClick={handleCreateAppointment}
+          onClick={handleGetMyAppointments}
           className="bg-blue-500 text-white rounded px-4 py-8 hover:bg-blue-600 transition mb-4 text-xl font-bold leading-[27px] text-left flex justify-between items-center"
           style={{ background: '#00D6E1' }}
         >
-          Agendar horário
+          Minha agenda
           <Image
             src="/icons/minha-agenda.svg"
             alt="Minha agenda"
@@ -49,11 +49,11 @@ export default function PatientHome() {
         </button>
 
         <button
-          onClick={handleGetMyAppointments}
+          onClick={handleCreateAppointment}
           className="bg-blue-500 text-white rounded px-4 py-8 hover:bg-blue-600 transition mb-4 text-xl font-bold leading-[27px] text-left flex justify-between items-center"
           style={{ background: '#ACA7FF' }}
         >
-          Meus agendamentos
+          Agendar Horário
           <Image
             src="/icons/agendar.svg"
             alt="Agendar"
@@ -62,8 +62,6 @@ export default function PatientHome() {
             className="ml-2"
           />
         </button>
-
-
       </section>
     </main>
   );
