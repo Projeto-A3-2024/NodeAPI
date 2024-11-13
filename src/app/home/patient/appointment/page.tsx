@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,6 +27,10 @@ export default function ProfessionalList() {
   const router = useRouter();
   useAuth('PATIENT');
 
+  useEffect(() => {
+    fetchProfessionals();
+  }, []);
+
   const fetchProfessionals = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -51,19 +55,8 @@ export default function ProfessionalList() {
     }
   };
 
-  const openModal = async () => {
-    setIsModalOpen(true);
-    setLoading(true);
-    await fetchProfessionals();
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   const handleSelectProfessional = async (professional: Professional) => {
     setSelectedProfessional(professional);
-    closeModal();
     await fetchProfessionalAppointments(professional.id);
   };
 
@@ -88,7 +81,6 @@ export default function ProfessionalList() {
       }
 
       toast.success('Agendamento criado com sucesso!');
-      closeModal();
     } catch (error) {
       toast.error((error as Error).message);
     } finally {
@@ -128,68 +120,55 @@ export default function ProfessionalList() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black">
       {!selectedProfessional && (
-        <button
-          onClick={openModal}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-        >
-          Selecionar profissional
-        </button>
-      )}
-
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4">Lista de Profissionais</h2>
-            {loading ? (
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-300 rounded w-full"></div>
-                <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-              </div>
-            ) : (
-              <table className="table-auto w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="border px-4 py-2">Nome</th>
-                    <th className="border px-4 py-2">Especialidade</th>
-                    <th className="border px-4 py-2">Ação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.isArray(professionals) && professionals.length > 0 ? (
-                    professionals.map((professional) => (
-                      <tr key={professional.id}>
-                        <td className="border px-4 py-2">{professional.name}</td>
-                        <td className="border px-4 py-2">{professional.specialty}</td>
-                        <td className="border px-4 py-2">
-                          <button
-                            onClick={() => handleSelectProfessional(professional)}
-                            className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
-                          >
-                            Selecionar
-                          </button>
+        (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
+              <h2 className="text-xl font-bold mb-4">Lista de Profissionais</h2>
+              {loading ? (
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-300 rounded w-full"></div>
+                  <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+                </div>
+              ) : (
+                <table className="table-auto w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="border px-4 py-2">Nome</th>
+                      <th className="border px-4 py-2">Especialidade</th>
+                      <th className="border px-4 py-2">Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(professionals) && professionals.length > 0 ? (
+                      professionals.map((professional) => (
+                        <tr key={professional.id}>
+                          <td className="border px-4 py-2">{professional.name}</td>
+                          <td className="border px-4 py-2">{professional.specialty}</td>
+                          <td className="border px-4 py-2">
+                            <button
+                              onClick={() => handleSelectProfessional(professional)}
+                              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
+                            >
+                              Selecionar
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={3} className="border px-4 py-2 text-center">
+                          Nenhum profissional encontrado.
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={3} className="border px-4 py-2 text-center">
-                        Nenhum profissional encontrado.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            )}
-            <button
-              onClick={closeModal}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition mt-4"
-            >
-              Fechar
-            </button>
+                    )}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
-        </div>
+        )
       )}
 
       {selectedProfessional && (
