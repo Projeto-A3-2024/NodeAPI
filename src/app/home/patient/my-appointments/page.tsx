@@ -24,7 +24,7 @@ export default function MyAppointments() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('/api/patient/my-appointments', {
+      const response = await fetch('/api/appointments/users', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

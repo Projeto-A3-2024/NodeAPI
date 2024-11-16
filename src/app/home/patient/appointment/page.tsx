@@ -60,7 +60,7 @@ export default function ProfessionalList() {
     await fetchProfessionalAppointments(professional.id);
   };
 
-  const handleScheduleAppointment = async (appointmentId: number, professionalId: number) => {
+  const handleScheduleAppointment = async (appointmentId: number) => {
     if (!selectedProfessional || !appointmentTime) {
       toast.error('Por favor, selecione um profissional e insira o horário.');
       return;
@@ -68,7 +68,7 @@ export default function ProfessionalList() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/patient/appointments?appointmentId=${appointmentId}`, {
+      const response = await fetch(`/api/appointments/${appointmentId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default function ProfessionalList() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`/api/patient/appointments?professionalId=${professionalId}`, {
+      const response = await fetch(`/api/appointments/only-available?professionalId=${professionalId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ export default function ProfessionalList() {
             </tbody>
           </table>
           <button
-            onClick={() => handleScheduleAppointment(appointmentId!, selectedProfessional.id)}
+            onClick={() => handleScheduleAppointment(appointmentId!)}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mt-2"
             disabled={!appointmentTime}
           >
