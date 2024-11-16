@@ -106,3 +106,88 @@ export async function PUT(
     );
   }
 }
+
+/**
+ * @swagger
+ * /api/appointments/{appointmentId}:
+ *   delete:
+ *     summary: Exclui um agendamento
+ *     description: Exclui um agendamento com base no ID do agendamento fornecido. O agendamento será removido permanentemente.
+ *     parameters:
+ *       - in: path
+ *         name: appointmentId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do agendamento a ser excluído.
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Agendamento excluído com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Agendamento excluído com sucesso"
+ *       400:
+ *         description: Falha ao encontrar o agendamento.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Agendamento não encontrado"
+ *       401:
+ *         description: Usuário não autorizado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *       500:
+ *         description: Erro ao excluir o agendamento.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Erro ao excluir agendamento"
+ *                 error:
+ *                   type: string
+ *                   example: "Mensagem de erro detalhada"
+ */
+export async function DELETE(
+  request: Request,
+  { params }: { params: { appointmentId: string } }
+) {
+  const authResponse = await authorize(['ADMIN', 'PATIENT'])(request);
+  if (authResponse) return authResponse;
+
+  const { appointmentId } = params;
+
+  try {
+    await prisma.appointment.delete({
+      where: {
+        id: Number(appointmentId),
+      },
+    });
+
+    return NextResponse.json({ message: 'Agendamento excluído com sucesso' });
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: 'Erro ao excluir agendamento', error: error.message },
+      { status: 500 }
+    );
+  }
+}
