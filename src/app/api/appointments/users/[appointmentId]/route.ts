@@ -90,6 +90,7 @@ export async function PUT(
         id: Number(appointmentId)
       },
       data: {
+        userId: null,
         status: 'DISPONIVEL',
       },
     });
