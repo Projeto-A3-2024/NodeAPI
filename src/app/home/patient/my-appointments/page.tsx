@@ -11,9 +11,9 @@ interface Appointment {
 }
 
 export default function MyAppointments() {
-  const [appointmentTime, setAppointmentTime] = useState('');
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [appointmentId, setAppointmentId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [appointmentToCancel, setAppointmentToCancel] = useState<number | null>(null);
   useAuth('PATIENT');
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function MyAppointments() {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('/api/patient/my-appointments', {
+      const response = await fetch('/api/appointments/users', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -42,9 +42,44 @@ export default function MyAppointments() {
     }
   }
 
-  const handleSelectAppointment = async (appointment: Appointment) => {
-    setAppointmentTime(appointment.appointmentTime.toString());
-    setAppointmentId(appointment.id);
+  const cancelAppointment = async (appointmentId: number) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`/api/appointments/users/${appointmentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      if (!response.ok) {
+        toast.error('Erro ao cancelar horário');
+        return null;
+      }
+
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      fetchAppointments();
+    }
+  }
+
+  const handleCancelClick = (appointmentId: number) => {
+    setAppointmentToCancel(appointmentId);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (appointmentToCancel !== null) {
+      cancelAppointment(appointmentToCancel);
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setAppointmentToCancel(null);
   };
 
   return (
@@ -62,11 +97,9 @@ export default function MyAppointments() {
           <tbody>
             {appointments.length > 0 ? (
               appointments.map((appointment) => {
-                const isSelected = appointment.appointmentTime.toString() === appointmentTime;
                 return (
                   <tr
                     key={appointment.id}
-                    className={isSelected ? "bg-blue-100" : ""}
                   >
                     <td className="border px-4 py-2">
                       {new Date(appointment.appointmentTime).toLocaleDateString()}
@@ -80,11 +113,10 @@ export default function MyAppointments() {
 
                     <td className="border px-4 py-2">
                       <button
-                        onClick={() => handleSelectAppointment(appointment)}
-                        className={`${isSelected ? "bg-blue-600 text-white" : "bg-blue-500 text-white hover:bg-blue-600"
-                          } px-2 py-1 rounded transition`}
+                        onClick={() => handleCancelClick(appointment.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mt-2"
                       >
-                        {isSelected ? "Selecionado" : "Selecionar"}
+                        Cancelar Consulta
                       </button>
                     </td>
                   </tr>
@@ -99,6 +131,29 @@ export default function MyAppointments() {
             )}
           </tbody>
         </table>
+
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+              <h3 className="text-lg font-semibold">Tem certeza que deseja cancelar?</h3>
+              <p className="mt-2">Este processo não pode ser desfeito.</p>
+              <div className="mt-4 flex justify-end gap-4">
+                <button
+                  onClick={handleConfirmCancel}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                >
+                  Sim, Cancelar
+                </button>
+                <button
+                  onClick={handleCloseModal}
+                  className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-500"
+                >
+                  Não, Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,26 +1,41 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import jwt from 'jsonwebtoken';
 import { authorize } from '@/middlewares/authMiddleware';
+import { prisma } from '@/lib/prisma';
 
 /**
  * @swagger
- * /api/patient/appointments:
- *   put:
- *     summary: Atualiza o status de um agendamento para indisponível
- *     description: Atualiza o status de um agendamento existente para "INDISPONIVEL" e associa o agendamento ao usuário identificado no token JWT.
- *     parameters:
- *       - in: query
- *         name: appointmentId
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID do agendamento a ser atualizado.
+ * /api/appointments/professionals/{professionalId}:
+ *   post:
+ *     summary: Cria um novo agendamento
+ *     description: Cria um agendamento com status "DISPONIVEL" para o profissional especificado usando o horário fornecido.
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: professionalId
+ *         required: true
+ *         description: ID do profissional para quem o agendamento será criado.
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *     requestBody:
+ *       description: Dados para criação do agendamento.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               appointmentTime:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Horário do agendamento no formato ISO 8601.
+ *                 example: "2024-11-01T14:00:00Z"
+ *             required:
+ *               - appointmentTime
  *     responses:
  *       200:
- *         description: Agendamento atualizado com sucesso.
+ *         description: Agendamento criado com sucesso.
  *         content:
  *           application/json:
  *             schema:
@@ -35,14 +50,18 @@ import { authorize } from '@/middlewares/authMiddleware';
  *                     id:
  *                       type: integer
  *                       example: 1
- *                     userId:
+ *                     professionalId:
  *                       type: integer
- *                       example: 2
+ *                       example: 10
+ *                     appointmentTime:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-11-01T14:00:00Z"
  *                     status:
  *                       type: string
- *                       example: "INDISPONIVEL"
+ *                       example: "DISPONIVEL"
  *       400:
- *         description: Falha ao encontrar o agendamento.
+ *         description: Horário do agendamento não fornecido.
  *         content:
  *           application/json:
  *             schema:
@@ -50,7 +69,7 @@ import { authorize } from '@/middlewares/authMiddleware';
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Horário não encontrado"
+ *                   example: "Horário é obrigatório"
  *       401:
  *         description: Usuário não autorizado.
  *         content:
@@ -62,7 +81,7 @@ import { authorize } from '@/middlewares/authMiddleware';
  *                   type: string
  *                   example: "Unauthorized"
  *       500:
- *         description: Erro ao atualizar o agendamento.
+ *         description: Erro ao criar o agendamento.
  *         content:
  *           application/json:
  *             schema:
@@ -75,30 +94,29 @@ import { authorize } from '@/middlewares/authMiddleware';
  *                   type: string
  *                   example: "Mensagem de erro detalhada"
  */
-export async function PUT(request: Request) {
-  const { searchParams } = new URL(request.url);
-	const authResponse = await authorize(['ADMIN', 'PATIENT'])(request);
+export async function POST(
+  request: Request,
+  { params }: { params: { professionalId: string } }
+) {
+  const authResponse = await authorize(['ADMIN', 'PROFESSIONAL'])(request);
   if (authResponse) return authResponse;
-  const appointmentId = parseInt(searchParams.get('appointmentId') || '0', 10);
-  
-  if (!appointmentId) {
+
+  const { professionalId } = params;
+
+  const { appointmentTime } = await request.json();
+  if (!appointmentTime) {
     return NextResponse.json(
-      { message: 'Horário não encontrado' },
+      { message: 'Horário é obrigatório' },
       { status: 400 }
     );
   }
 
   try {
-    const token = request.headers.get('Authorization')?.split(' ')[1];
-    const decodedToken: any = jwt.verify(token!, process.env.NEXT_PUBLIC_JWT_SECRET!);
-
-    const appointment = await prisma.appointment.update({
-      where: { 
-        id: appointmentId
-       },
+    const appointment = await prisma.appointment.create({
       data: {
-        userId: decodedToken.userId,
-        status: 'INDISPONIVEL',
+        professionalId: Number(professionalId),
+        appointmentTime: new Date(appointmentTime),
+        status: 'DISPONIVEL',
       },
     });
 
@@ -113,22 +131,23 @@ export async function PUT(request: Request) {
 
 /**
  * @swagger
- * /api/patient/appointments:
+ * /api/appointments/professionals/{professionalId}:
  *   get:
- *     summary: Lista os agendamentos disponíveis de um profissional
- *     description: Retorna uma lista de agendamentos com status "DISPONIVEL" para um profissional específico.
- *     parameters:
- *       - in: query
- *         name: professionalId
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID do profissional cujas disponibilidades serão listadas.
+ *     summary: Lista os agendamentos de um profissional
+ *     description: Retorna todos os agendamentos de um profissional especificado pelo ID.
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: professionalId
+ *         required: true
+ *         description: ID do profissional cujos agendamentos serão listados.
+ *         schema:
+ *           type: integer
+ *           example: 10
  *     responses:
  *       200:
- *         description: Lista de agendamentos disponíveis retornada com sucesso.
+ *         description: Lista de agendamentos retornada com sucesso.
  *         content:
  *           application/json:
  *             schema:
@@ -145,15 +164,24 @@ export async function PUT(request: Request) {
  *                       professionalId:
  *                         type: integer
  *                         example: 10
- *                       date:
+ *                       appointmentTime:
  *                         type: string
  *                         format: date-time
  *                         example: "2024-11-01T14:00:00Z"
  *                       status:
  *                         type: string
  *                         example: "DISPONIVEL"
- *       400:
- *         description: ID do profissional não fornecido.
+ *                       user:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 20
+ *                           name:
+ *                             type: string
+ *                             example: "João Silva"
+ *       404:
+ *         description: Nenhum agendamento encontrado para o profissional.
  *         content:
  *           application/json:
  *             schema:
@@ -161,7 +189,7 @@ export async function PUT(request: Request) {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Profissional é obrigatório"
+ *                   example: "Nenhum agendamento encontrado para este profissional."
  *       401:
  *         description: Usuário não autorizado.
  *         content:
@@ -173,7 +201,7 @@ export async function PUT(request: Request) {
  *                   type: string
  *                   example: "Unauthorized"
  *       500:
- *         description: Erro ao listar disponibilidade.
+ *         description: Erro ao buscar os agendamentos.
  *         content:
  *           application/json:
  *             schema:
@@ -181,36 +209,41 @@ export async function PUT(request: Request) {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Erro ao listar disponibilidade"
+ *                   example: "Erro ao buscar agendamentos"
  *                 error:
  *                   type: string
  *                   example: "Mensagem de erro detalhada"
  */
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const authResponse = await authorize(['ADMIN', 'PATIENT'])(request);
+export async function GET(
+  request: Request,
+  { params }: { params: { professionalId: string } }
+) {
+  const authResponse = await authorize(['ADMIN'])(request);
   if (authResponse) return authResponse;
 
-  const professionalId = parseInt(searchParams.get('professionalId') || '0', 10);
-  if(!professionalId) {
-    return NextResponse.json(
-      { message: 'Profissional é obrigatório' },
-      { status: 400 }
-    );
-  }
+  const { professionalId } = params;
 
   try {
     const appointments = await prisma.appointment.findMany({
       where: {
-        professionalId,
-        status: 'DISPONIVEL',
+        professionalId: Number(professionalId),
+      },
+      include: {
+        user: true,
       },
     });
+
+    if (!appointments || appointments.length === 0) {
+      return NextResponse.json(
+        { message: 'Nenhum agendamento encontrado para este profissional.' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ appointments });
   } catch (error: any) {
     return NextResponse.json(
-      { message: 'Erro ao listar disponibilidade', error: error.message },
+      { message: 'Erro ao buscar agendamentos', error: error.message },
       { status: 500 }
     );
   }
