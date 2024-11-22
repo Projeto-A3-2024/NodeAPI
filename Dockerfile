@@ -1,5 +1,5 @@
 # Etapa 1: Construção da aplicação
-FROM node:18 AS builder
+FROM node:20 AS builder
 
 # Configura o diretório de trabalho
 WORKDIR /app
@@ -9,6 +9,10 @@ COPY package.json package-lock.json ./
 
 # Instala as dependências
 RUN npm install
+
+# Copiar o diretório prisma
+COPY prisma ./prisma
+RUN npx prisma generate
 
 # Copia o restante dos arquivos da aplicação
 COPY . .
@@ -38,4 +42,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Comando para iniciar a aplicação
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]
