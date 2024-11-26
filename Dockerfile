@@ -1,45 +1,26 @@
-# Etapa 1: Construção da aplicação
-FROM node:20 AS builder
-
-# Configura o diretório de trabalho
-WORKDIR /app
-
-# Copia apenas os arquivos necessários para instalar as dependências
-COPY package.json package-lock.json ./
-
-# Instala as dependências
-RUN npm install
-
-# Copiar o diretório prisma
-COPY prisma ./prisma
-RUN npx prisma generate
-
-# Copia o restante dos arquivos da aplicação
-COPY . .
-
-# Cria a build de produção
-RUN npm run build
-
-# Instala as dependências de produção
-RUN npm prune --production
-
-# Etapa 2: Configuração para produção
-FROM node:20 AS runner
+# Etapa 1: Ambiente de desenvolvimento
+FROM node:20
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos necessários da etapa anterior
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copia os arquivos necessários para instalar as dependências
+COPY package.json package-lock.json ./
 
-# Define a variável de ambiente para produção
-ENV NODE_ENV=production
+# Instala as dependências de desenvolvimento
+RUN npm install
+
+# Copia todos os arquivos do projeto
+COPY . .
+
+# Gera o banco de dados (necessário para Prisma)
+RUN npx prisma generate
 
 # Expõe a porta padrão do Next.js
 EXPOSE 3000
 
-# Comando para iniciar a aplicação
-CMD ["npm", "run", "dev"]
+# Copia o script wait-for-it para o container
+COPY wait-for-it.sh /app/wait-for-it.sh
+
+# Comando para esperar o banco de dados e executar o servidor
+CMD ["sh", "-c", "./wait-for-it.sh db:5432 -- npx prisma migrate dev && npm run prisma:seed && npm run dev"]
