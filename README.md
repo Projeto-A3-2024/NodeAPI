@@ -49,6 +49,10 @@ Este é um sistema de agendamento de consultas para profissionais de saúde e pa
 
    ```bash
    DATABASE_URL="url_do_seu_banco_de_dados"
+   NEXT_PUBLIC_JWT_SECRET="chave pública para criação da autenticação jwt"
+   SENDGRID_API_KEY="chave de segurança do Sendgrid (responsável pelo envio dos e-mails)"
+   SENDGRID_FORGOT_PASSWORD_TEMPLATE_ID="template do email de recuperação criado no Sendgrid"
+   SENDGRID_FROM_EMAIL="email responsável pelo envio"
 
 4. **Realize a migração do banco de dados**
 
@@ -59,6 +63,15 @@ Este é um sistema de agendamento de consultas para profissionais de saúde e pa
 
    ```bash
    npm run dev
+
+## Caso opte por rodar o projeto no docker
+
+1. **Siga os passos anteriores até a etapa 3**
+   
+2. **Realize a criação do container docker**
+   
+    ```bash
+    docker-compose up --build
 
 ## Estrutura do Projeto
 
